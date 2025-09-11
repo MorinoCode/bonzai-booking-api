@@ -1,21 +1,90 @@
-# "org" ensures this Service is used with the correct Serverless Framework Access Key.
 org: mortezajs24
-# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
 app: bonzai-api
-# "service" is the name of this project. This will also be added to your AWS resource names.
 service: Bonzai
 
 provider:
   name: aws
   runtime: nodejs20.x
-  # Uncomment to easily set up a custom domain. Read the docs for more details:
-  # https://www.serverless.com/framework/docs/providers/aws/guide/domains
-  # domain: api.example.com
+  region: eu-north-1
+  environment:
+    BOOKINGS_TABLE: BookingsV2
+
+# ⚡ Packaging per function
+package:
+  individually: true
 
 functions:
   hello:
     handler: handler.hello
+    package:
+      include:
+        - handler.js 
     events:
       - httpApi:
           path: /
           method: get
+
+  createBooking:
+    handler: functions/createBooking/index.createBooking
+    package:
+      include:
+        - functions/createBooking/**
+        - functions/validators/**
+        - functions/utils/**
+        - node_modules/**
+    events:
+      - httpApi:
+          path: /bookings
+          method: post
+
+  getAllBookings:
+    handler: functions/getAllBookings/index.getAllBookings
+    events:
+      - httpApi:
+          path: /bookings/all
+          method: get
+
+  getBookingsByGuest:
+    handler: functions/getBookingsByGuest/index.getBookingsByGuest
+    events:
+      - httpApi:
+          path: /bookings/{guestEmail}
+          method: get
+
+  cancelBooking:
+    handler: functions/cancelBooking/index.cancelBooking
+    events:
+      - httpApi:
+          path: /bookings/{bookingId}/{guestEmail}
+          method: delete
+
+  updateBooking:
+    handler: functions/updateBooking/index.updateBooking
+    package:
+      include:
+        - functions/updateBooking/**
+        - functions/validators/**
+        - functions/utils/**
+        - node_modules/**
+    events:
+      - httpApi:
+          path: /bookings/{bookingId}/{guestEmail}
+          method: put
+
+resources:
+  Resources:
+    BookingsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: BookingsV2
+        AttributeDefinitions:
+          - AttributeName: PK
+            AttributeType: S
+          - AttributeName: SK
+            AttributeType: S
+        KeySchema:
+          - AttributeName: PK
+            KeyType: HASH # Partition Key
+          - AttributeName: SK
+            KeyType: RANGE # Sort Key
+        BillingMode: PAY_PER_REQUEST

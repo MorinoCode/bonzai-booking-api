@@ -1,8 +1,14 @@
-exports.hello = async (event) => {
+
+
+module.exports.hello = async (event) => {
   return {
     statusCode: 200,
-    body: JSON.stringify({
-      message: "Go Serverless v4! Your function executed successfully!",
-    }),
+    body: JSON.stringify(
+      {
+        message: 'Hello from Bonz.ai booking API 👋',
+      },
+      null,
+      2
+    ),
   };
 };
