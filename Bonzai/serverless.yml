@@ -9,20 +9,11 @@ provider:
   environment:
     BOOKINGS_TABLE: BookingsV2
 
-# ⚡ Packaging per function
+
 package:
   individually: true
 
 functions:
-  hello:
-    handler: handler.hello
-    package:
-      include:
-        - handler.js 
-    events:
-      - httpApi:
-          path: /
-          method: get
 
   createBooking:
     handler: functions/createBooking/index.createBooking
@@ -84,7 +75,7 @@ resources:
             AttributeType: S
         KeySchema:
           - AttributeName: PK
-            KeyType: HASH # Partition Key
+            KeyType: HASH 
           - AttributeName: SK
-            KeyType: RANGE # Sort Key
+            KeyType: RANGE 
         BillingMode: PAY_PER_REQUEST
