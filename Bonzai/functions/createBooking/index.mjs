@@ -27,7 +27,6 @@ export const createBooking = async (event) => {
     const body = JSON.parse(event.body);
     const { guestName, guestEmail, checkInDate, checkOutDate, guests, rooms } = body;
 
-    // ولیدیشن ساده
     if (!guestName || !guestEmail || !checkInDate || !checkOutDate || !guests || !rooms) {
       return { statusCode: 400, body: JSON.stringify({ message: "Missing required fields" }) };
     }
@@ -42,10 +41,9 @@ export const createBooking = async (event) => {
     const totalPrice = calculateTotalPrice(rooms, nights);
     const bookingId = uuidv4();
 
-    // ساخت آیتم با PK و SK
     const item = {
-      PK: { S: `GUEST#${guestEmail}` },        // Partition Key برای کاربر
-      SK: { S: `BOOKING#${bookingId}` },     // Sort Key برای هر رزرو
+      PK: { S: `GUEST#${guestEmail}` },        
+      SK: { S: `BOOKING#${bookingId}` },      
       bookingId: { S: bookingId },
       guestName: { S: guestName },
       guestEmail: { S: guestEmail },
